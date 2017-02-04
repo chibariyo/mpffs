@@ -1,10 +1,13 @@
 package controllers
 
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import play.twirl.api.Html
 import java.io.File
+
 import models.User
+
+case class Subscription(emailId: String, interval: Long)
 
 object Application extends Controller {
 
@@ -30,7 +33,16 @@ object Application extends Controller {
       Ok("added " + request.body + " to subscriber's list")
   }
 
-  def subscribe = Action(parse.json) {
+  def subscribeOld2 = Action(parse.json) {
+    request =>
+      val reqData: JsValue = request.body
+      val emailId = (reqData \ "emailId").as[String]
+      val interval = (reqData \ "interval").as[String]
+      Ok(s"added $emailId to subscriber's list and will send updates every $interval")
+
+  }
+
+  def subscribe = Action(parse.tolerantJson) {
     request =>
       val reqData: JsValue = request.body
       val emailId = (reqData \ "emailId").as[String]
@@ -55,5 +67,23 @@ object Application extends Controller {
       }.getOrElse {
         BadRequest("failed to add user")
       }
+  }
+
+  import scala.concurrent.ExecutionContext.Implicits.global
+  val parseAsSubscription = parse.using {
+    request =>
+      parse.json.map {
+        body =>
+          val emailId:String = (body \ "emailId").as[String]
+          val fromDate:Long = (body \ "fromDate").as[Long]
+          Subscription(emailId, fromDate)
+      }
+  }
+
+  implicit val subWrites = Json.writes[Subscription]
+  def getSub = Action(parseAsSubscription) {
+    request =>
+      val subscription: Subscription = request.body
+      Ok(Json.toJson(subscription))
   }
 }
