@@ -14,7 +14,8 @@ object Artist {
     Artist("Antonio Lucio Vivaldi", "Italy"),
     Artist("Franz Peter Schubert", "Austria"),
     Artist("Franz Liszt", "Austria"),
-    Artist("Giuseppe Fortunino Francesco Verdi", "Austria"))
+    Artist("Giuseppe Fortunino Francesco Verdi", "Austria"),
+    Artist("David Tateyama", "Japan"))
 
   def fetch: Seq[Artist] = {
     availableArtist

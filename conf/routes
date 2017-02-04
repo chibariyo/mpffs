@@ -19,3 +19,5 @@ GET     /api/search2/artist         controllers.ArtistController.search2(name:Op
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+POST    /subscribe                  controllers.Application.subscribe
